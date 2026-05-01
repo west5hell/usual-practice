@@ -32,11 +32,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         expire = datetime.now(UTC) + expires_delta
     else:
         expire = datetime.now(UTC) + timedelta(
-            minutes=settings.access_token_expire_minutes
+            minutes=settings.access_token_expire_minutes,
         )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, settings.secret_key.get_secret_value(), algorithm=settings.algorithm
+        to_encode,
+        settings.secret_key.get_secret_value(),
+        algorithm=settings.algorithm,
     )
     return encoded_jwt
 
@@ -56,7 +58,6 @@ def verify_access_token(token: str) -> str | None:
         return payload.get("sub")
 
 
-# get_current_user
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -78,7 +79,9 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    result = await db.execute(select(models.User).where(models.User.id == user_id_int))
+    result = await db.execute(
+        select(models.User).where(models.User.id == user_id_int),
+    )
     user = result.scalars().first()
     if not user:
         raise HTTPException(

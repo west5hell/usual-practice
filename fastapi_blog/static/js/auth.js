@@ -6,6 +6,7 @@ export async function getCurrentUser() {
     return currentUser;
   }
 
+  // Return in-progress fetch to prevent duplicate API calls
   if (fetchPromise) {
     return fetchPromise;
   }
